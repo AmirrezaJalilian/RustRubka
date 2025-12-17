@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["AuxData","Bot","Button","ButtonCalendar","ButtonLocation","ButtonNumberPicker","ButtonSelection","ButtonSelectionItem","ButtonStringPicker","ButtonTextbox","Chat","ContactMessage","File","ForwardedFrom","InlineMessage","Keypad","KeypadRow","LiveLocation","Location","Message","Poll","PollStatus","Sticker"]};

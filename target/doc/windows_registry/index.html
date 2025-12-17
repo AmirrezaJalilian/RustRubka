@@ -1,0 +1,48 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Windows registry"><title>windows_registry - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-84e720fa.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="windows_registry" data-themes="" data-resource-suffix="" data-rustdoc-version="1.89.0 (29483883e 2025-08-04)" data-channel="1.89.0" data-search-js="search-92309212.js" data-settings-js="settings-5514c975.js" ><script src="../static.files/storage-4e99c027.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-fd3af306.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../windows_registry/index.html">windows_<wbr>registry</a><span class="version">0.6.1</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#windows-registry" title="Windows registry">Windows registry</a></li></ul><h3><a href="#structs">Crate Items</a></h3><ul class="block"><li><a href="#structs" title="Structs">Structs</a></li><li><a href="#enums" title="Enums">Enums</a></li><li><a href="#constants" title="Constants">Constants</a></li><li><a href="#types" title="Type Aliases">Type Aliases</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1>Crate <span>windows_registry</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/windows_registry/lib.rs.html#1-92">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><h3 id="windows-registry"><a class="doc-anchor" href="#windows-registry">§</a>Windows registry</h3>
+<p>The <a href="https://crates.io/crates/windows-registry">windows-registry</a> crate provides simple, safe, and efficient access to the Windows registry.</p>
+<ul>
+<li><a href="https://kennykerr.ca/rust-getting-started/">Getting started</a></li>
+<li><a href="https://github.com/microsoft/windows-rs/tree/master/crates/samples">Samples</a></li>
+<li><a href="https://github.com/microsoft/windows-rs/releases">Releases</a></li>
+</ul>
+<p>Start by adding the following to your Cargo.toml file:</p>
+<div class="example-wrap"><pre class="language-toml"><code>[dependencies.windows-registry]
+version = &quot;0.6&quot;</code></pre></div>
+<p>Read and write registry keys and values as needed:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>windows_registry::<span class="kw-2">*</span>;
+
+<span class="kw">fn </span>main() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">let </span>key = CURRENT_USER.create(<span class="string">"software\\windows-rs"</span>)<span class="question-mark">?</span>;
+
+    key.set_u32(<span class="string">"number"</span>, <span class="number">123</span>)<span class="question-mark">?</span>;
+    key.set_string(<span class="string">"name"</span>, <span class="string">"Rust"</span>)<span class="question-mark">?</span>;
+
+    <span class="macro">println!</span>(<span class="string">"{}"</span>, key.get_u32(<span class="string">"number"</span>)<span class="question-mark">?</span>);
+    <span class="macro">println!</span>(<span class="string">"{}"</span>, key.get_string(<span class="string">"name"</span>)<span class="question-mark">?</span>);
+
+    <span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+<p>Use the <code>options()</code> method for even more control:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>windows_registry::<span class="kw-2">*</span>;
+
+<span class="kw">fn </span>main() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">let </span>tx = Transaction::new()<span class="question-mark">?</span>;
+
+    <span class="kw">let </span>key = CURRENT_USER
+        .options()
+        .read()
+        .write()
+        .create()
+        .transaction(<span class="kw-2">&amp;</span>tx)
+        .open(<span class="string">"software\\windows-rs"</span>)<span class="question-mark">?</span>;
+
+    key.set_u32(<span class="string">"name"</span>, <span class="number">123</span>)<span class="question-mark">?</span>;
+
+    tx.commit()<span class="question-mark">?</span>;
+
+    <span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+</div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.HSTRING.html" title="struct windows_registry::HSTRING">HSTRING</a></dt><dd>An (<a href="https://docs.microsoft.com/en-us/windows/win32/winrt/hstring">HSTRING</a>)
+is a reference-counted and immutable UTF-16 string type.</dd><dt><a class="struct" href="struct.Key.html" title="struct windows_registry::Key">Key</a></dt><dd>A registry key.</dd><dt><a class="struct" href="struct.KeyIterator.html" title="struct windows_registry::KeyIterator">KeyIterator</a></dt><dd>An iterator of registry key names.</dd><dt><a class="struct" href="struct.OpenOptions.html" title="struct windows_registry::OpenOptions">Open<wbr>Options</a></dt><dd>Options and flags used to configure how a registry key is opened.</dd><dt><a class="struct" href="struct.Transaction.html" title="struct windows_registry::Transaction">Transaction</a></dt><dd>A transaction object.</dd><dt><a class="struct" href="struct.Value.html" title="struct windows_registry::Value">Value</a></dt><dd>A registry value.</dd><dt><a class="struct" href="struct.ValueIterator.html" title="struct windows_registry::ValueIterator">Value<wbr>Iterator</a></dt><dd>An iterator of registry values.</dd></dl><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><dl class="item-table"><dt><a class="enum" href="enum.Type.html" title="enum windows_registry::Type">Type</a></dt><dd>The possible types that a registry value could have.</dd></dl><h2 id="constants" class="section-header">Constants<a href="#constants" class="anchor">§</a></h2><dl class="item-table"><dt><a class="constant" href="constant.CLASSES_ROOT.html" title="constant windows_registry::CLASSES_ROOT">CLASSES_<wbr>ROOT</a></dt><dd>The predefined <code>HKEY_CLASSES_ROOT</code> registry key.</dd><dt><a class="constant" href="constant.CURRENT_CONFIG.html" title="constant windows_registry::CURRENT_CONFIG">CURRENT_<wbr>CONFIG</a></dt><dd>The predefined <code>HKEY_CURRENT_CONFIG</code> registry key.</dd><dt><a class="constant" href="constant.CURRENT_USER.html" title="constant windows_registry::CURRENT_USER">CURRENT_<wbr>USER</a></dt><dd>The predefined <code>HKEY_CURRENT_USER</code> registry key.</dd><dt><a class="constant" href="constant.LOCAL_MACHINE.html" title="constant windows_registry::LOCAL_MACHINE">LOCAL_<wbr>MACHINE</a></dt><dd>The predefined <code>HKEY_LOCAL_MACHINE</code> registry key.</dd><dt><a class="constant" href="constant.USERS.html" title="constant windows_registry::USERS">USERS</a></dt><dd>The predefined <code>HKEY_USERS</code> registry key.</dd></dl><h2 id="types" class="section-header">Type Aliases<a href="#types" class="anchor">§</a></h2><dl class="item-table"><dt><a class="type" href="type.Result.html" title="type windows_registry::Result">Result</a></dt><dd>A specialized <a href="type.Result.html" title="type windows_registry::Result"><code>Result</code></a> type that provides Windows error information.</dd></dl></section></div></main></body></html>

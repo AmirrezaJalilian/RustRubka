@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["Robot"],"type":["CallbackHandler","InlineQueryHandler","MessageHandler"]};

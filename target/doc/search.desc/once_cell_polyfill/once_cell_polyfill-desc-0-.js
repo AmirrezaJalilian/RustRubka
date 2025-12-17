@@ -1,0 +1,1 @@
+searchState.loadedDescShard("once_cell_polyfill", 0, "Polyfill for <code>OnceCell</code> stdlib feature for use with older …\nReturns the argument unchanged.\nCalls <code>U::from(self)</code>.")

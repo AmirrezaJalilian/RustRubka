@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 authors = ["AmirrezaJalilian"]
 description = "A Rust library for interacting with Rubika Bot API"
+license = "MIT"
 repository = "https://github.com/AmirrezaJalilian/RustRubka"
 
 [dependencies]
