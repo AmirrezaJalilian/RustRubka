@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["HandshakeError"],"struct":["Builder","CertValidationResult","MidHandshakeTlsStream","TlsStream"]};

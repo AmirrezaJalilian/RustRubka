@@ -1,9 +1,0 @@
-(function() {
-    var implementors = Object.fromEntries([["jiff",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.89.0/core/iter/traits/accum/trait.Sum.html\" title=\"trait core::iter::traits::accum::Sum\">Sum</a> for <a class=\"struct\" href=\"jiff/struct.SignedDuration.html\" title=\"struct jiff::SignedDuration\">SignedDuration</a>"],["impl&lt;'a&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/1.89.0/core/iter/traits/accum/trait.Sum.html\" title=\"trait core::iter::traits::accum::Sum\">Sum</a>&lt;&amp;'a <a class=\"struct\" href=\"jiff/struct.SignedDuration.html\" title=\"struct jiff::SignedDuration\">SignedDuration</a>&gt; for <a class=\"struct\" href=\"jiff/struct.SignedDuration.html\" title=\"struct jiff::SignedDuration\">SignedDuration</a>"]]],["writeable",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.89.0/core/iter/traits/accum/trait.Sum.html\" title=\"trait core::iter::traits::accum::Sum\">Sum</a> for <a class=\"struct\" href=\"writeable/struct.LengthHint.html\" title=\"struct writeable::LengthHint\">LengthHint</a>"],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.89.0/core/iter/traits/accum/trait.Sum.html\" title=\"trait core::iter::traits::accum::Sum\">Sum</a>&lt;<a class=\"primitive\" href=\"https://doc.rust-lang.org/1.89.0/std/primitive.usize.html\">usize</a>&gt; for <a class=\"struct\" href=\"writeable/struct.LengthHint.html\" title=\"struct writeable::LengthHint\">LengthHint</a>"]]]]);
-    if (window.register_implementors) {
-        window.register_implementors(implementors);
-    } else {
-        window.pending_implementors = implementors;
-    }
-})()
-//{"start":57,"fragment_lengths":[723,689]}

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["PrivateKey","ValidUses"],"struct":["AcquirePrivateKeyOptions","CertContext","HashAlgorithm","KeySpec","SetKeyProvInfo"]};

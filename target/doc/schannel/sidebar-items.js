@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["cert_chain","cert_context","cert_store","crypt_key","crypt_prov","key_handle","ncrypt_key","schannel_cred","tls_stream"],"trait":["RawPointer"]};

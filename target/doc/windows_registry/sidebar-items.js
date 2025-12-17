@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["CLASSES_ROOT","CURRENT_CONFIG","CURRENT_USER","LOCAL_MACHINE","USERS"],"enum":["Type"],"struct":["HSTRING","Key","KeyIterator","OpenOptions","Transaction","Value","ValueIterator"],"type":["Result"]};

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["Algorithm","Direction","Protocol"],"struct":["Builder","SchannelCred"]};

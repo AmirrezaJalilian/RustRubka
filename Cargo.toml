@@ -6,6 +6,9 @@ authors = ["AmirrezaJalilian"]
 description = "A Rust library for interacting with Rubika Bot API"
 license = "MIT"
 repository = "https://github.com/AmirrezaJalilian/RustRubka"
+readme = "README.md"
+keywords = ["bot", "api", "rubika", "messenger"]
+categories = ["api-bindings", "web-programming::http-client"]
 
 [dependencies]
 reqwest = { version = "0.12.26", features = ["json", "multipart"] }

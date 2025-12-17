@@ -1,1 +1,0 @@
-searchState.loadedDescShard("windows_link", 0, "Linking for Windows\nDefines an external function to import.")
