@@ -1,192 +1,179 @@
-# 📚 rust_rubka Bot Rust Library
+# RustRubka 
 
-A Rust library for interacting with the [Rubika Bot API](https://rubika.ir/). This is a Rust port of the Python `rubka` library.
+یه کتابخونه ساده و راحت برای کار با API ربات‌های روبیکا، نوشته شده با Rust. اگه می‌خوای ربات‌های روبیکا بسازی و مدیریت کنی، این کتابخونه دقیقاً همون چیزیه که نیاز داری. بی‌حاشیه، مستقیم و کاربردی!
 
-## ⚙️ Installation
+## چیکار می‌کنه؟ 🤖
 
-Add this to your `Cargo.toml`:
+RustRubka بهت کمک می‌کنه تا با API روبیکا ارتباط برقرار کنی و ربات‌هایی بسازی که می‌تونن:
+- پیام بفرستن و دریافت کنن
+- کیبوردهای چت و اینلاین بسازن
+- فایل، عکس، موسیقی و غیره آپلود کنن
+- نظرسنجی بفرستن
+- موقعیت مکانی و مخاطب‌ها رو مدیریت کنن
+- و کلی چیز دیگه!
 
-```toml
-[dependencies]
-rust_rubka = { version = "0.1.0", path = "." }
-```
+همه چیز به صورت async نوشته شده، پس سریع و کارآمد هست.
 
-Or from crates.io (when published):
+## نصبش چطوره؟ 📦
+
+اول مطمئن شو که Rust رو نصب داری (اگر نه، برو به [rustup.rs](https://rustup.rs) و نصبش کن).
+
+بعد، این کتابخونه رو به پروژه‌ت اضافه کن:
 
 ```toml
 [dependencies]
 rust_rubka = "0.1.0"
 ```
 
-## 🚀 Getting Started
+یا اگر می‌خوای از گیت‌هاب مستقیم بگیری:
+
+```toml
+[dependencies]
+rust_rubka = { git = "https://github.com/AmirrezaJalilian/RustRubka" }
+```
+
+## چطور استفاده کنیم؟ 💻
+
+اول، یه ربات در روبیکا بساز و توکنش رو بگیر. بعد، کد زیر رو ببین:
 
 ```rust
 use rust_rubka::{Robot, Message};
-use std::sync::Arc;
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let bot = Arc::new(Robot::new(
-        "YOUR_TOKEN_HERE".to_string(),
-        None,
-        None,
-        None,
-        None,
-        None,
-    ));
+async fn main() {
+    // ربات رو راه‌اندازی کن
+    let mut robot = Robot::new(
+        "توکن_ربات_تو".to_string(),
+        None, // نام سشن (اختیاری)
+        None, // auth (اختیاری)
+        None, // key (اختیاری)
+        None, // پلتفرم (اختیاری)
+        None, // تایم‌اوت (اختیاری)
+    );
 
-    let bot_clone = bot.clone();
-    bot.on_message(None, Some(vec!["start".to_string()]), move |bot, msg| {
-        let bot = bot.clone();
-        let msg = msg.clone();
-        tokio::spawn(async move {
-            let _ = msg.reply("سلام! خوش آمدید!").await;
-        });
+    // هندلر برای پیام‌ها
+    robot.on_message(None, Some(vec!["start".to_string()]), |bot, msg| {
+        Box::pin(async move {
+            msg.reply("سلام! من ربات هستم!").await.unwrap();
+        })
     });
 
-    bot.run().await?;
-    Ok(())
+    // هندلر برای کال‌بک‌ها
+    robot.on_callback(None, |bot, msg| {
+        Box::pin(async move {
+            println!("کال‌بک دریافت شد!");
+        })
+    });
+
+    // ربات رو اجرا کن
+    robot.run().await.unwrap();
 }
 ```
 
-## 📬 Handling Messages
+این یه مثال ساده بود. حالا بیایید یه مثال کامل‌تر ببینیم.
 
-You can handle incoming text messages using `on_message()`:
+## مثال‌های کاربردی 📝
+
+### ارسال پیام با کیبورد اینلاین
 
 ```rust
-use rust_rubka::{Robot, Message};
-use std::sync::Arc;
+use rust_rubka::{Robot, InlineBuilder};
 
-let bot = Arc::new(Robot::new("TOKEN".to_string(), None, None, None, None, None));
+#[tokio::main]
+async fn main() {
+    let mut robot = Robot::new("توکن".to_string(), None, None, None, None, None);
 
-bot.on_message(None, Some(vec!["hello".to_string()]), move |bot, msg| {
-    let bot = bot.clone();
-    let msg = msg.clone();
-    tokio::spawn(async move {
-        let _ = msg.reply("سلام کاربر عزیز 👋").await;
+    robot.on_message(None, Some(vec!["menu".to_string()]), |bot, msg| {
+        Box::pin(async move {
+            let keypad = InlineBuilder::new()
+                .row(&[
+                    InlineBuilder::button_simple("btn1", "گزینه ۱"),
+                    InlineBuilder::button_simple("btn2", "گزینه ۲"),
+                ])
+                .build();
+
+            msg.reply_inline("منو رو انتخاب کن:", &keypad).await.unwrap();
+        })
     });
+
+    robot.on_callback(Some("btn1".to_string()), |bot, msg| {
+        Box::pin(async move {
+            msg.edit("گزینه ۱ انتخاب شد!").await.unwrap();
+        })
+    });
+
+    robot.run().await.unwrap();
+}
+```
+
+### ارسال فایل
+
+```rust
+robot.on_message(None, Some(vec!["file".to_string()]), |bot, msg| {
+    Box::pin(async move {
+        bot.send_document(
+            &msg.chat_id,
+            Some("path/to/file.pdf"),
+            None,
+            Some("یه فایل برای تست"),
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+        ).await.unwrap();
+    })
 });
 ```
 
-## 🎮 Handling Callback Buttons
+### ارسال نظرسنجی
 
 ```rust
-use rust_rubka::{Robot, Message, ChatKeypadBuilder};
-use std::sync::Arc;
-
-let bot = Arc::new(Robot::new("TOKEN".to_string(), None, None, None, None, None));
-
-let bot_clone = bot.clone();
-bot.on_message(None, Some(vec!["gender".to_string()]), move |bot, msg| {
-    let bot = bot.clone();
-    let msg = msg.clone();
-    tokio::spawn(async move {
-        let builder = ChatKeypadBuilder::new();
-        let btn1 = builder.button("male", "👨 مرد", None);
-        let btn2 = builder.button("female", "👩 زن", None);
-        let keypad = builder.row(&[btn1, btn2]).build(None, None);
-        
-        let _ = msg.reply_keypad("جنسیت خود را انتخاب کنید:", &keypad).await;
-    });
-});
-
-let bot_clone2 = bot.clone();
-bot.on_callback(Some("male".to_string()), move |bot, msg| {
-    let msg = msg.clone();
-    tokio::spawn(async move {
-        let _ = msg.reply("شما مرد هستید").await;
-    });
-});
-
-let bot_clone3 = bot.clone();
-bot.on_callback(Some("female".to_string()), move |bot, msg| {
-    let msg = msg.clone();
-    tokio::spawn(async move {
-        let _ = msg.reply("شما زن هستید").await;
-    });
+robot.on_message(None, Some(vec!["poll".to_string()]), |bot, msg| {
+    Box::pin(async move {
+        bot.send_poll(
+            &msg.chat_id,
+            "بهترین زبان برنامه‌نویسی چیه؟",
+            &["Rust".to_string(), "Python".to_string(), "JavaScript".to_string()],
+        ).await.unwrap();
+    })
 });
 ```
 
-## 🔘 Inline Button Builder
+## API Reference 📚
 
-```rust
-use rust_rubka::InlineBuilder;
+### Robot
 
-let builder = InlineBuilder::new();
-let btn = builder.button_simple("info", "اطلاعات");
-let inline_keypad = builder.row(&[btn]).build();
-```
+کلاس اصلی برای مدیریت ربات.
 
-## 💬 Utility Methods
+- `new(token, session_name, auth, key, platform, timeout)`: ربات رو می‌سازه.
+- `on_message(filters, commands, handler)`: هندلر برای پیام‌ها.
+- `on_callback(button_id, handler)`: هندلر برای کال‌بک‌ها.
+- `on_inline_query(handler)`: هندلر برای کوئری‌های اینلاین.
+- `send_message(chat_id, text, ...)`: پیام می‌فرسته.
+- `send_poll(chat_id, question, options)`: نظرسنجی می‌فرسته.
+- `send_location(chat_id, lat, lon, ...)`: موقعیت می‌فرسته.
+- `send_contact(chat_id, first_name, last_name, phone)`: مخاطب می‌فرسته.
+- `send_document(...)`, `send_image(...)`, etc.: فایل‌ها رو می‌فرسته.
+- `run()`: ربات رو اجرا می‌کنه.
 
-| Method | Description |
-|--------|-------------|
-| `get_chat(chat_id)` | Get chat information |
-| `get_name(chat_id)` | Get user name |
-| `get_username(chat_id)` | Get username |
-| `send_message(...)` | Send text message |
-| `edit_message_text(...)` | Edit message |
-| `delete_message(...)` | Delete message |
-| `send_location(...)` | Send location |
-| `send_poll(...)` | Send poll |
-| `send_contact(...)` | Send contact |
-| `forward_message(...)` | Forward message |
+### Message
 
-## 🧱 Button Types
+برای کار با پیام‌ها.
 
-Supported inline button types include:
+- `reply(text)`: پاسخ می‌ده.
+- `edit(new_text)`: پیام رو ویرایش می‌کنه.
+- `delete()`: پیام رو پاک می‌کنه.
 
-- `Simple`
-- `Payment`
-- `Calendar`
-- `Location`
-- `CameraImage`, `CameraVideo`
-- `GalleryImage`, `GalleryVideo`
-- `File`, `Audio`, `RecordAudio`
-- `MyPhoneNumber`, `MyLocation`
-- `Textbox`, `Barcode`, `Link`
+### Builders
 
-## 🧩 Dynamic Chat Keypad
+- `InlineBuilder`: برای کیبوردهای اینلاین.
+- `ChatKeypadBuilder`: برای کیبوردهای چت.
 
-```rust
-use rust_rubka::ChatKeypadBuilder;
+برای جزئیات بیشتر، کد منبع رو چک کن یا داکیومنت کامل رو ببین.
 
-let builder = ChatKeypadBuilder::new();
-let btn1 = builder.button("play", "🎮 بازی کن", None);
-let btn2 = builder.button("exit", "❌ خروج", None);
-let keypad = builder.row(&[btn1, btn2]).build(None, None);
-```
+## مشارکت 🤝
 
-## 🧪 Set Commands
+ایده داری یا باگی پیدا کردی؟ خوشحال می‌شیم کمک کنی! یه PR بفرست یا issue باز کن در [گیت‌هاب](https://github.com/AmirrezaJalilian/RustRubka).
 
-```rust
-use serde_json::json;
-
-let commands = vec![
-    json!({"command": "start", "description": "شروع"}),
-    json!({"command": "help", "description": "راهنما"}),
-];
-let _ = bot.set_commands(&commands).await;
-```
-
-## 🔄 Update Offset Automatically
-
-Bot updates are handled using `get_updates()` and `offset_id` is managed internally in the `run()` method.
-
-## 🛠 Advanced Features
-
-- `update_bot_endpoint()` – Set webhook or polling
-- `remove_keypad()` – Remove chat keypad
-- `edit_chat_keypad()` – Edit or add chat keypad
-
-## Differences from Python Version
-
-1. **Async/Await**: All API methods are async in Rust
-2. **Handlers**: Message handlers run in spawned tasks
-3. **Types**: Strong typing with Rust's type system
-4. **Error Handling**: Uses `Result<T, E>` instead of exceptions
-5. **Ownership**: Uses `Arc` for shared ownership of the Robot instance
-
-## License
-
-This project is licensed under the MIT License.
